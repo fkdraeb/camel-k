@@ -1,0 +1,37 @@
+apiVersion: camel.apache.org/v1
+kind: Pipe
+metadata:
+  name: tcp-sync-response-pipe
+spec:
+  source:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: spring-rabbitmq-source
+    properties:
+      host: production-rabbitmqcluster-nodes
+      port: 5672
+      username: guest
+      password: guest
+      queues: tcp_async_queue
+      exchangeName: amq.direct
+  steps:
+    - ref: 
+        kind: Kamelet
+        apiVersion: camel.apache.org/v1
+        name: set-body-action
+      properties:
+        value: "This is the modified body: ${body}"
+  sink:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: hip-mysql-sink
+    properties:
+      query: SELECT * FROM Patients WHERE patient_id LIKE :#patientId
+      username: root
+      password: password
+      serverName: mysql
+      serverPort: 3306
+      databaseName: HIP
+    

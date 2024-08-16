@@ -1,0 +1,116 @@
+# ---------------------------------------------------------------------------
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ---------------------------------------------------------------------------
+apiVersion: camel.apache.org/v1
+kind: Kamelet
+metadata:
+  name: hip-mysql-sink
+  annotations:
+    camel.apache.org/kamelet.support.level: "Stable"
+    camel.apache.org/catalog.version: "4.7.0-SNAPSHOT"
+    camel.apache.org/kamelet.icon: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjcxcHgiIGhlaWdodD0iMjcxcHgiIHZpZXdCb3g9Ii03LjUgMCAyNzEgMjcxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaWRZTWlkIj48cGF0aCBkPSJNMjQ1LjQ0IDEwOC4zMDhoLTg1LjA5YTcuNzM4IDcuNzM4IDAgMCAxLTcuNzM1LTcuNzM0di04OC42OEMxNTIuNjE1IDUuMzI3IDE0Ny4yOSAwIDE0MC43MjYgMGgtMzAuMzc1Yy02LjU2OCAwLTExLjg5IDUuMzI3LTExLjg5IDExLjg5NHY4OC4xNDNjMCA0LjU3My0zLjY5NyA4LjI5LTguMjcgOC4zMWwtMjcuODg1LjEzM2MtNC42MTIuMDI1LTguMzU5LTMuNzE3LTguMzI1bC4xNzMtODguMjQxQzU0LjE0NCA1LjMzNyA0OC44MTcgMCA0Mi4yNCAwSDExLjg5QzUuMzIxIDAgMCA1LjMyNyAwIDExLjg5NFYyNjAuMjFjMCA1LjgzNCA0LjcyNiAxMC41NiAxMC41NTUgMTAuNTZIMjQ1LjQ0YzUuODM0IDAgMTAuNTYtNC43MjYgMTAuNTYtMTAuNTZWMTE4Ljg2OGMwLTUuODM0LTQuNzI2LTEwLjU2LTEwLjU2LTEwLjU2em0tMzkuOTAyIDkzLjIzM2MwIDcuNjQ1LTYuMTk4IDEzLjg0NC0xMy44NDMgMTMuODQ0SDE2Ny42OWMtNy42NDYgMC0xMy44NDQtNi4xOTktMTMuODQ0LTEzLjg0NHYtMjQuMDA1YzAtNy42NDYgNi4xOTgtMTMuODQ0IDEzLjg0NC0xMy44NDRoMjQuMDA1YzcuNjQ1IDAgMTMuODQzIDYuMTk4IDEzLjg0MyAxMy44NDR2MjQuMDA1eiIgZmlsbD0iI0Y2MCIvPjwvc3ZnPg=="
+    camel.apache.org/provider: "Apache Software Foundation"
+    camel.apache.org/kamelet.group: "SQL"
+    camel.apache.org/kamelet.namespace: "Database"
+  labels:
+    camel.apache.org/kamelet.type: "sink"
+spec:
+  definition:
+    title: "MySQL Sink"
+    description: |-
+      Send data to a MySQL Database.
+      
+      In your Pipe file, you must explicitly declare the SQL Server driver dependency in spec->integration->dependencies.
+      
+      - "mvn:mysql:mysql-connector-java:<version>"
+
+      This Kamelet expects a JSON-formatted body. Use key:value pairs to map the JSON fields and parameters. For example, here is a query:
+
+      'INSERT INTO accounts (username,city) VALUES (:#username,:#city)'
+
+      Here is example input for the example query:
+
+      '{ "username":"oscerd", "city":"Rome"}'
+    required:
+      - serverName
+      - username
+      - password
+      - query
+      - databaseName
+    type: object
+    properties:
+      serverName:
+        title: Server Name
+        description: The server name for the data source.
+        type: string
+        example: localhost
+      serverPort:
+        title: Server Port
+        description: The server port for the data source.
+        type: string
+        default: 3306
+      username:
+        title: Username
+        description: The username to access a secured MySQL Database.
+        type: string
+        x-descriptors:
+        - urn:camel:group:credentials
+      password:
+        title: Password
+        description: The password to access a secured MySQL Database.
+        type: string
+        format: password
+        x-descriptors:
+        - urn:camel:group:credentials
+      query:
+        title: Query
+        description: The query to execute against the MySQL Database.
+        type: string
+        example: 'INSERT INTO accounts (username,city) VALUES (:#username,:#city)'
+      databaseName:
+        title: Database Name
+        description: The name of the MySQL Database.
+        type: string
+  types:
+    in:
+      mediaType: application/json
+  dependencies:
+  - "camel:jackson"
+  - "camel:kamelet"
+  - "camel:sql"
+  - "mvn:org.apache.commons:commons-dbcp2:2.12.0"
+  - "mvn:com.mysql:mysql-connector-j:8.3.0"
+  template:
+    beans:
+      - name: dsBean
+        type: "#class:org.apache.commons.dbcp2.BasicDataSource"
+        properties:
+          username: '{{username}}'
+          password: '{{password}}'
+          url: 'jdbc:mysql://{{serverName}}:{{serverPort}}/{{databaseName}}'
+          driverClassName: 'com.mysql.cj.jdbc.Driver'
+    from:
+      uri: "kamelet:source"
+      steps:
+      - unmarshal:
+          json: 
+            library: Jackson
+      - to: 
+          uri: "sql:{{query}}"
+          parameters:
+            dataSource: "#bean:{{dsBean}}"
+      - process:
+          ref: "#class:pt.hip.RSP_K21Builder"

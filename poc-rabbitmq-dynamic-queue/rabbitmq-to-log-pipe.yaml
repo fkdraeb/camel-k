@@ -1,0 +1,25 @@
+apiVersion: camel.apache.org/v1
+kind: Pipe
+metadata:
+  name: rabbitmq-to-log-pipe
+spec:
+  source:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: hip-rabbitmq-source
+    properties:
+      host: production-rabbitmqcluster-nodes
+      port: 5672
+      username: guest
+      password: guest
+      queues: dynamic_created_queue
+      routingKey: dynamic_created_key
+      exchangeName: amq.direct
+      autoDeclare: true
+      durable: true
+  sink:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: log-sink

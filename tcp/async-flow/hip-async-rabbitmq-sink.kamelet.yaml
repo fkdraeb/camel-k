@@ -1,0 +1,95 @@
+apiVersion: camel.apache.org/v1
+kind: Kamelet
+metadata:
+  name: hip-async-rabbitmq-sink
+  annotations:
+    camel.apache.org/kamelet.support.level: "Preview"
+    camel.apache.org/catalog.version: "4.7.0-SNAPSHOT"
+    camel.apache.org/kamelet.icon: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjcxcHgiIGhlaWdodD0iMjcxcHgiIHZpZXdCb3g9Ii03LjUgMCAyNzEgMjcxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaWRZTWlkIj48cGF0aCBkPSJNMjQ1LjQ0IDEwOC4zMDhoLTg1LjA5YTcuNzM4IDcuNzM4IDAgMCAxLTcuNzM1LTcuNzM0di04OC42OEMxNTIuNjE1IDUuMzI3IDE0Ny4yOSAwIDE0MC43MjYgMGgtMzAuMzc1Yy02LjU2OCAwLTExLjg5IDUuMzI3LTExLjg5IDExLjg5NHY4OC4xNDNjMCA0LjU3My0zLjY5NyA4LjI5LTguMjcgOC4zMWwtMjcuODg1LjEzM2MtNC42MTIuMDI1LTguMzU5LTMuNzE3LTguMzI1bC4xNzMtODguMjQxQzU0LjE0NCA1LjMzNyA0OC44MTcgMCA0Mi4yNCAwSDExLjg5QzUuMzIxIDAgMCA1LjMyNyAwIDExLjg5NFYyNjAuMjFjMCA1LjgzNCA0LjcyNiAxMC41NiAxMC41NTUgMTAuNTZIMjQ1LjQ0YzUuODM0IDAgMTAuNTYtNC43MjYgMTAuNTYtMTAuNTZWMTE4Ljg2OGMwLTUuODM0LTQuNzI2LTEwLjU2LTEwLjU2LTEwLjU2em0tMzkuOTAyIDkzLjIzM2MwIDcuNjQ1LTYuMTk4IDEzLjg0NC0xMy44NDMgMTMuODQ0SDE2Ny42OWMtNy42NDYgMC0xMy44NDQtNi4xOTktMTMuODQ0LTEzLjg0NHYtMjQuMDA1YzAtNy42NDYgNi4xOTgtMTMuODQ0IDEzLjg0NC0xMy44NDRoMjQuMDA1YzcuNjQ1IDAgMTMuODQzIDYuMTk4IDEzLjg0MyAxMy44NDR2MjQuMDA1eiIgZmlsbD0iI0Y2MCIvPjwvc3ZnPg=="
+    camel.apache.org/provider: "Apache Software Foundation"
+    camel.apache.org/kamelet.group: "RabbitMQ"
+    camel.apache.org/kamelet.namespace: "Messaging"
+  labels:
+    camel.apache.org/kamelet.type: "sink"
+spec:
+  definition:
+    title: "RabbitMQ Sink"
+    description: |-
+      Send data to a RabbitMQ Broker.
+    required:
+      - host
+      - port
+      - exchangeName
+    type: object
+    properties:
+      host:
+        title: Server Address
+        description: RabbitMQ broker address
+        type: string
+        example: "localhost"
+      port:
+        title: Server Port
+        description: RabbitMQ broker port
+        type: int
+        example: 5672
+      routingKey:
+        title: Routing Key
+        description: The routing key to use when binding a consumer queue to the exchange
+        type: string
+      username:
+        title: Username
+        description: The username to access the RabbitMQ server
+        type: string
+        x-descriptors:
+        - urn:camel:group:credentials
+      password:
+        title: Password
+        description: The password to access the RabbitMQ server
+        type: string
+        format: password
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:password
+        - urn:camel:group:credentials
+      exchangeName:
+        title: Exchange name
+        description: The exchange name determines the exchange the queue will be bound to
+        type: string
+      queues:
+        title: Queue name
+        description: The queue to receive messages from
+        type: string
+      autoDeclareProducer:
+        title: Auto Declare Producer
+        description: Specifies whether the producer should auto declare binding between exchange, queue and routing key when starting
+        type: boolean
+        default: false
+      disableReplyTo:
+        title: Disable Reply To
+        description: Disables the usage of the reply-to feature, which prevents clients from using the direct-reply-to queue for RPC-style messaging.
+        type: boolean
+        default: false
+  dependencies:
+    - "camel:spring-rabbitmq"
+    - "camel:core"
+    - "camel:kamelet"
+  template:
+    beans:
+      - name: connectionFactory
+        type: "#class:org.springframework.amqp.rabbit.connection.CachingConnectionFactory"
+        properties:
+          username: '{{?username}}'
+          password: '{{?password}}'
+          host: '{{host}}'
+          port: '{{port}}'
+    from:
+      uri: "kamelet:source"
+      steps:
+      - to:
+          uri: "spring-rabbitmq://{{exchangeName}}"
+          parameters:
+            connectionFactory: "#bean:{{connectionFactory}}"
+            routingKey: "{{?routingKey}}"
+            queues: "{{?queues}}"
+            disableReplyTo: "{{?disableReplyTo}}"
+      - process:
+          ref: "#class:pt.hip.AckProcessor"

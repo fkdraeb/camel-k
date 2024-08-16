@@ -1,0 +1,37 @@
+apiVersion: camel.apache.org/v1
+kind: Pipe
+metadata:
+  name: hip-oracle-to-soap-rabbitmq-pipe
+spec:
+  source:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: hip-oracle-database-source
+    properties:
+      serverName: 172.24.161.114 #ip of docker container
+      username: hip
+      password: hip1234
+      query: >
+        SELECT heq.ID_EVENT, heq.ID_MESSAGE, heq.ID_SUBSCRIPTION, hs.IP_EXT, hs.PORT_EXT 
+        FROM HIP_EVENTS_QUEUE heq 
+        LEFT JOIN HIP_SUBSCRIPTIONS hs ON heq.ID_SUBSCRIPTION = hs.ID_SUBSCRIPTION 
+        WHERE heq.STATUS LIKE 'N' AND hs.CONNECTION_TYPE LIKE 'SOAP'
+      databaseName: free
+      pollDelay: 15000
+  steps:
+    - ref:
+        kind: Kamelet
+        apiVersion: camel.apache.org/v1
+        name: hip-router-processor-action
+  sink:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: hip-rabbitmq-sink
+    properties:
+      exchangeName: hip.soap
+      host: production-rabbitmqcluster-nodes
+      port: 5672
+      username: guest
+      password: guest

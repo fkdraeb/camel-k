@@ -1,0 +1,31 @@
+apiVersion: camel.apache.org/v1
+kind: Pipe
+metadata:
+  name: soap-response-pipe
+spec:
+  source:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: hip-rabbitmq-source
+    properties:
+      host: production-rabbitmqcluster-nodes
+      port: 5672
+      username: guest
+      password: guest
+      exchangeName: hip.soap
+      exchangeType: fanout
+      queues: soap_queue
+      routingKey: soap_rk
+      autoDeclare: true
+      durable: true
+  steps:
+  - ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: soap-process-action
+  sink:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: log-sink

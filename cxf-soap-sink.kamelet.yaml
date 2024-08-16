@@ -1,0 +1,57 @@
+apiVersion: camel.apache.org/v1
+kind: Kamelet
+metadata:
+  name: cxf-soap-sink
+  annotations:
+    #camel.apache.org/kamelet.support.level: "Preview"
+    #camel.apache.org/catalog.version: "4.7.0-SNAPSHOT"
+    camel.apache.org/kamelet.icon: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjcxcHgiIGhlaWdodD0iMjcxcHgiIHZpZXdCb3g9Ii03LjUgMCAyNzEgMjcxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaWRZTWlkIj48cGF0aCBkPSJNMjQ1LjQ0IDEwOC4zMDhoLTg1LjA5YTcuNzM4IDcuNzM4IDAgMCAxLTcuNzM1LTcuNzM0di04OC42OEMxNTIuNjE1IDUuMzI3IDE0Ny4yOSAwIDE0MC43MjYgMGgtMzAuMzc1Yy02LjU2OCAwLTExLjg5IDUuMzI3LTExLjg5IDExLjg5NHY4OC4xNDNjMCA0LjU3My0zLjY5NyA4LjI5LTguMjcgOC4zMWwtMjcuODg1LjEzM2MtNC42MTIuMDI1LTguMzU5LTMuNzE3LTguMzI1bC4xNzMtODguMjQxQzU0LjE0NCA1LjMzNyA0OC44MTcgMCA0Mi4yNCAwSDExLjg5QzUuMzIxIDAgMCA1LjMyNyAwIDExLjg5NFYyNjAuMjFjMCA1LjgzNCA0LjcyNiAxMC41NiAxMC41NTUgMTAuNTZIMjQ1LjQ0YzUuODM0IDAgMTAuNTYtNC43MjYgMTAuNTYtMTAuNTZWMTE4Ljg2OGMwLTUuODM0LTQuNzI2LTEwLjU2LTEwLjU2LTEwLjU2em0tMzkuOTAyIDkzLjIzM2MwIDcuNjQ1LTYuMTk4IDEzLjg0NC0xMy44NDMgMTMuODQ0SDE2Ny42OWMtNy42NDYgMC0xMy44NDQtNi4xOTktMTMuODQ0LTEzLjg0NHYtMjQuMDA1YzAtNy42NDYgNi4xOTgtMTMuODQ0IDEzLjg0NC0xMy44NDRoMjQuMDA1YzcuNjQ1IDAgMTMuODQzIDYuMTk4IDEzLjg0MyAxMy44NDR2MjQuMDA1eiIgZmlsbD0iI0Y2MCIvPjwvc3ZnPg=="
+    #camel.apache.org/provider: "Apache Software Foundation"
+    #camel.apache.org/kamelet.group: "RabbitMQ"
+    #camel.apache.org/kamelet.namespace: "Messaging"
+  labels:
+    camel.apache.org/kamelet.type: "sink"
+spec:
+  definition:
+    title: "CXF Sink"
+    description: "Kamelet to send messages to a CXF endpoint"
+    required:
+      - serviceUrl
+    properties:
+      address:
+        type: string
+        title: "Address"
+        description: "The address of the CXF endpoint"
+      wsdlURL:
+        type: string
+        title: "WSDL URL"
+        description: "The URL of the WSDL document"
+      serviceClass:
+        type: string
+        title: "Service Class"
+        description: "The service class used by the CXF endpoint"
+      operationName:
+        type: string
+        title: "Operation Name"
+        description: "The name of the operation to invoke on the CXF endpoint"
+      dataFormat:
+        type: string
+        title: "Data Format"
+        description: "The data format (e.g., PAYLOAD, MESSAGE, POJO) used by the CXF endpoint"
+  dependencies:
+    - "camel:core"
+    - "camel:kamelet"
+    - "camel:cxf-soap" 
+  template:
+    from:
+      uri: "kamelet:source"
+    steps:
+      - to:
+          uri: "cxf:{{address}}"
+          parameters:
+            wsdlURL: "{{?wsdlURL}}"
+            serviceClass: "{{?serviceClass}}"
+            operationName: "{{?operationName}}"
+            dataFormat: "{{?dataFormat}}"
+
+      

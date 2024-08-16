@@ -1,0 +1,19 @@
+apiVersion: camel.apache.org/v1
+kind: Pipe
+metadata:
+  name: hip-cxf-pipe
+spec:
+  source:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: hip-cxf-source
+    properties:
+      address: "/exsdrouter"
+      serviceClass: "pt.min_saude.spms.hip_core.camel.soap.SoapServiceImpl"
+      dataFormat: "RAW"
+  sink:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: hip-soap-processor-action

@@ -1,0 +1,7 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "c:\\Users\\TMARQUE1\\AppData\\Roaming\\Code\\User\\globalStorage\\redhat.vscode-camelk\\java-dependencies/*.jar",
+        "/home/p0w/.vscode-server/data/User/globalStorage/redhat.vscode-camelk/java-dependencies/*.jar"
+    ]
+}

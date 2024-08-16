@@ -1,0 +1,36 @@
+apiVersion: camel.apache.org/v1
+kind: Pipe
+metadata:
+  name: sql-poll-pipe
+spec:
+  integration:
+    dependencies:
+      - "mvn:com.mysql:mysql-connector-j:8.3.0"
+  source:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: mysql-source
+    properties:
+      serverName: mysql
+      serverPort: 3306
+      databaseName: HIP
+      username: root
+      password: password
+      query: "SELECT * FROM HL7_QUEUE WHERE STATUS LIKE 'N'"
+      delay: 10000
+  sink:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: hip-rabbitmq-sink
+    properties:
+      exchangeName: amq.direct
+      host: production-rabbitmqcluster-nodes
+      port: 5672
+      username: guest
+      password: guest
+      routingKey: sql_queue
+      disableReplyTo: true
+
+    

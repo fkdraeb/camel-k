@@ -1,0 +1,38 @@
+apiVersion: camel.apache.org/v1
+kind: Pipe
+metadata:
+  name: soap-to-rabbitmq-pipe
+spec:
+  integration:
+    dependencies:
+      - "mvn:pt.min-saude.spms:hip-core:0.0.2-20240808.165045-30"
+  source:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: soap-cxf-source
+    properties:
+      address: "/exsdrouter"
+      serviceClass: "pt.min_saude.spms.hip_core.camel.soap.SoapServiceImpl"
+      dataFormat: "RAW"
+  #steps:
+  #  - ref:
+  #      kind: Kamelet
+  #      apiVersion: camel.apache.org/v1
+  #      name: dynamic-queue-builder-action
+  #    properties:
+  #      queueName: soap_queue
+  #      routingKey: soap_rk
+  #      exchange: hip.soap
+  #      logQueue: log_queue
+  sink:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: hip-rabbitmq-sink
+    properties:
+      exchangeName: hip.soap
+      host: production-rabbitmqcluster-nodes
+      port: 5672
+      username: guest
+      password: guest
