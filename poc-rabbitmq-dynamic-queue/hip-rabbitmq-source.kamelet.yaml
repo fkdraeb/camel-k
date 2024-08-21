@@ -84,10 +84,10 @@ spec:
       uri: "spring-rabbitmq://{{exchangeName}}"
       parameters:
         connectionFactory: "#bean:{{connectionFactory}}"
-        exchangeType: "{{exchangeType}}"
+        exchangeType: "{{?exchangeType}}"
         routingKey: "{{?routingKey}}"
         queues: "{{?queues}}"
-        autoDeclare: "{{autoDeclare}}"
+        autoDeclare: "{{?autoDeclare}}"
         arg.queue.durable: "{{durable}}"
       steps:
       - to: "kamelet:sink"

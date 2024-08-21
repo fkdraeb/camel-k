@@ -1,0 +1,39 @@
+apiVersion: camel.apache.org/v1
+kind: Pipe
+metadata:
+  name: hip-rabbitmq-to-tcp-pipe
+spec:
+  source:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: hip-rabbitmq-source
+    properties:
+      host: production-rabbitmqcluster-nodes
+      port: 5672
+      username: guest
+      password: guest
+      exchangeName: hip.tcp
+      queues: tcp_outbound_queue
+      durable: true
+  steps:
+    - ref:
+        kind: Kamelet
+        apiVersion: camel.apache.org/v1
+        name: hip-hl7messagepreparation-processor-action
+  sink:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: hip-netty-sink
+  #sink:
+  #  ref:
+  #    kind: Kamelet
+  #    apiVersion: camel.apache.org/v1
+  #    name: netty-http-sink
+  #  properties:
+  #    protocol: https
+  #    host: webhook.site
+  #    port: 443
+  #    path: 8445cab4-c9d0-426c-ab41-347be9fe1f01
+    
