@@ -23,7 +23,7 @@ spec:
         example: "#class:com.example.Processor"
   dependencies:
     - "camel:bean"
-    - "mvn:pt.min-saude.spms:hip-core:0.0.2-20240820.170110-109"
+    - "mvn:pt.min-saude.spms:hip-core:0.0.2-20240822.084110-123"
   template:
     from:
       uri: "kamelet:source"

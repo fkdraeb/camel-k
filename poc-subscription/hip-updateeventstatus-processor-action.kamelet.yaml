@@ -1,7 +1,7 @@
 apiVersion: camel.apache.org/v1
 kind: Kamelet
 metadata:
-  name: hip-hl7messagepreparation-processor-action
+  name: hip-updateeventstatus-processor-action
   annotations:
     camel.apache.org/catalog.version: main-SNAPSHOT
     camel.apache.org/kamelet.group: "Custom"
@@ -29,5 +29,5 @@ spec:
       uri: "kamelet:source"
       steps:
         - process:
-            ref: "#class:pt.min_saude.spms.hip_core.camel.processors.HL7MessagePreparationProcessor"
+            ref: "#class:pt.min_saude.spms.hip_core.camel.processors.EventStatusUpdateProcessor"
         - to: "kamelet:sink"

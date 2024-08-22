@@ -21,19 +21,19 @@ spec:
         kind: Kamelet
         apiVersion: camel.apache.org/v1
         name: hip-hl7messagepreparation-processor-action
+    - ref:
+        kind: Kamelet
+        apiVersion: camel.apache.org/v1
+        name: hip-netty-sink
   sink:
     ref:
       kind: Kamelet
       apiVersion: camel.apache.org/v1
-      name: hip-netty-sink
-  #sink:
-  #  ref:
-  #    kind: Kamelet
-  #    apiVersion: camel.apache.org/v1
-  #    name: netty-http-sink
-  #  properties:
-  #    protocol: https
-  #    host: webhook.site
-  #    port: 443
-  #    path: 8445cab4-c9d0-426c-ab41-347be9fe1f01
-    
+      name: hip-updateeventstatus-processor-action
+  errorHandler:
+    sink:
+      endpoint:
+        ref:
+          kind: Kamelet
+          apiVersion: camel.apache.org/v1
+          name: hip-updateeventstatus-processor-action

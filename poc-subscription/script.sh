@@ -5,13 +5,14 @@ kubectl apply -f hip-cxf-source.kamelet.yaml
 kubectl apply -f hip-oracle-source.kamelet.yaml
 kubectl apply -f hip-router-processor-action.kamelet.yaml
 kubectl apply -f hip-hl7messagepreparation-processor-action.kamelet.yaml
+kubectl apply -f hip-updateeventstatus-processor-action.kamelet.yaml
 
 #kamel delete hip-oracle-to-tcp-rabbitmq-pipe
 kamel delete hip-rabbitmq-to-tcp-pipe
 
-#kubectl apply -f hip-cxf-pipe.yaml
+kubectl apply -f hip-cxf-pipe.yaml
 #kubectl apply -f hip-oracle-to-soap-rabbitmq-pipe.yaml
-#kubectl apply -f hip-oracle-to-tcp-rabbitmq-pipe.yaml
+kubectl apply -f hip-oracle-to-tcp-rabbitmq-pipe.yaml
 kubectl apply -f hip-rabbitmq-to-tcp-pipe.yaml
 
 # Wait for 40 seconds to allow resources to be created and ready

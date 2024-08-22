@@ -36,7 +36,7 @@ spec:
         description: "The name of the operation to invoke on the CXF endpoint"
   dependencies:
     - "camel:cxf-soap"
-    - "mvn:pt.min-saude.spms:hip-core:0.0.2-20240820.170110-109"
+    - "mvn:pt.min-saude.spms:hip-core:0.0.2-20240822.084110-123"
     - "mvn:org.hibernate.orm:hibernate-core:6.6.0.Final"  
   template:
     from:
