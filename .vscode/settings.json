@@ -3,5 +3,8 @@
         "lib/**/*.jar",
         "c:\\Users\\TMARQUE1\\AppData\\Roaming\\Code\\User\\globalStorage\\redhat.vscode-camelk\\java-dependencies/*.jar",
         "/home/p0w/.vscode-server/data/User/globalStorage/redhat.vscode-camelk/java-dependencies/*.jar"
-    ]
+    ],
+    "yaml.schemas": {
+        "kubernetes://schema/camel.apache.org/v1@pipe": "file:///home/p0w/hip-camel-k/poc-subscription/hip-rabbitmq-to-tcp-pipe.yaml"
+    }
 }

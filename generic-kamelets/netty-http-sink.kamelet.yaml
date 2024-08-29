@@ -10,16 +10,34 @@ spec:
   definition:
     title: "Netty HTTP to Log"
     description: "A Kamelet that listens on an HTTP endpoint and logs the data."
+    required:
+      - protocol
+      - host
     type: object
     properties:
+      protocol:
+        title: "Protocol"
+        description: >
+          The protocol to use which is either http, https or proxy - a consumer only option.
+          Enum values: http, https
+        type: String
+        example: http
+      host:
+        title: "Host"
+        description: "The local hostname such as localhost, or 0.0.0.0 when being a consumer. The remote HTTP server hostname when using producer."
+        type: String
       port:
         title: "Port"
         description: "The port to listen on"
         type: integer
         example: 80
+      path:
+        title: "Path"
+        description: "Resource path."
+        type: String
   dependencies:
-    - "camel:netty-http"
     - "camel:kamelet"
+    - "camel:netty-http"
   template:
     from:
       uri: "kamelet:source"

@@ -2,6 +2,10 @@ apiVersion: camel.apache.org/v1
 kind: Pipe
 metadata:
   name: hip-cxf-pipe
+  annotations: 
+    trait.camel.apache.org/builder.incremental-image-build: "false"
+    trait.camel.apache.org/logging.color: "true"
+    trait.camel.apache.org/logging.level: "DEBUG"
 spec:
   source:
     ref:

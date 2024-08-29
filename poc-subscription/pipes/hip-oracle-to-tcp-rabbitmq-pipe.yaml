@@ -12,11 +12,16 @@ spec:
       serverName: 172.24.161.114 #ip of docker container
       username: hip
       password: hip1234
-      query: > 
-        SELECT heq.ID_EVENT, heq.ID_MESSAGE, heq.ID_SUBSCRIPTION, hs.IP_EXT, hs.PORT_EXT, hp.DESC_PLAYER  
+      #query: > 
+      #  SELECT heq.ID_EVENT, heq.ID_MESSAGE, heq.ID_SUBSCRIPTION, hs.IP_EXT, hs.PORT_EXT, hp.DESC_PLAYER  
+      #  FROM HIP_EVENTS_QUEUE heq 
+      #  LEFT JOIN HIP_SUBSCRIPTIONS hs ON heq.ID_SUBSCRIPTION = hs.ID_SUBSCRIPTION 
+      #  LEFT JOIN HIP_PLAYERS hp ON hs.ID_PLAYER_OUT = hp.ID_PLAYER 
+      #  WHERE heq.STATUS LIKE 'N' AND hs.CONNECTION_TYPE LIKE 'TCP'
+      query: >
+        SELECT heq.ID_EVENT
         FROM HIP_EVENTS_QUEUE heq 
         LEFT JOIN HIP_SUBSCRIPTIONS hs ON heq.ID_SUBSCRIPTION = hs.ID_SUBSCRIPTION 
-        LEFT JOIN HIP_PLAYERS hp ON hs.ID_PLAYER_OUT = hp.ID_PLAYER 
         WHERE heq.STATUS LIKE 'N' AND hs.CONNECTION_TYPE LIKE 'TCP'
       databaseName: free
       pollDelay: 15000

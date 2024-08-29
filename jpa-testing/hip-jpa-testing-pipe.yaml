@@ -1,0 +1,19 @@
+apiVersion: camel.apache.org/v1
+kind: Pipe
+metadata:
+  name: hip-jpa-testing-pipe
+spec:
+  source:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: netty-http-source
+    properties:
+      host: http://0.0.0.0
+      port: 8092
+  sink:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: hip-jpa-processor-action
+    

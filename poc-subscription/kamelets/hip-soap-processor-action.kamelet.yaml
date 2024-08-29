@@ -1,7 +1,7 @@
 apiVersion: camel.apache.org/v1
 kind: Kamelet
 metadata:
-  name: hip-updateeventstatus-processor-action
+  name: hip-soap-processor-action
   annotations:
     camel.apache.org/catalog.version: main-SNAPSHOT
     camel.apache.org/kamelet.group: "Custom"
@@ -23,11 +23,11 @@ spec:
         example: "#class:com.example.Processor"
   dependencies:
     - "camel:bean"
-    - "mvn:pt.min-saude.spms:hip-core:0.0.2-20240822.084110-123"
+    - "mvn:pt.min-saude.spms:hip-core:0.0.2-20240828.091708-155"
   template:
     from:
       uri: "kamelet:source"
       steps:
         - process:
-            ref: "#class:pt.min_saude.spms.hip_core.camel.processors.EventStatusUpdateProcessor"
+            ref: "#class:pt.min_saude.spms.hip_core.camel.processors.SoapProcessor"
         - to: "kamelet:sink"
